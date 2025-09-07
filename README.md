@@ -173,24 +173,6 @@ fuzzywuzzy>=0.18.0
 
 Built for Agents4Science 2025 to demonstrate AI's capability in autonomous scientific research synthesis.
 
-## 🐳 Docker Deployment
-
-For easy deployment with all dependencies pre-installed:
-
-```bash
-# Using Docker Compose (recommended)
-docker-compose build
-docker-compose up
-
-# Or using Docker CLI
-docker build -t llm-surveying-llms .
-docker run -e ANTHROPIC_API_KEY="your-key" \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/outputs:/app/outputs \
-  llm-surveying-llms
-```
-
-See `deployment/DOCKER_README.md` for detailed Docker instructions.
 
 ## 📄 License
 

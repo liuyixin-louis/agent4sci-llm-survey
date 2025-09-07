@@ -345,23 +345,6 @@ curl -X GET "http://localhost:8000/surveys/{survey_id}/status" \
   -H "api-key: your-api-key"
 ```
 
-## Docker Deployment
-
-Run the API using Docker:
-
-```bash
-# Build image
-docker build -t llm-survey-api .
-
-# Run container
-docker run -p 8000:8000 \
-  -e API_KEY="your-api-key" \
-  -e ANTHROPIC_API_KEY="your-anthropic-key" \
-  llm-survey-api
-
-# Or use docker-compose
-docker-compose up
-```
 
 ## Interactive Documentation
 

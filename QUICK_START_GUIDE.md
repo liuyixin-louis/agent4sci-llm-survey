@@ -24,18 +24,15 @@ python scripts/demos/simplified_demo.py
 
 **Output**: See the 26.1% improvement demonstrated with pre-computed results
 
-## Option 2: Docker (Recommended)
+## Option 2: Direct Python Setup
 
 ```bash
-# 1. Build container
-docker build -t llm-survey .
+# 1. Install requirements
+pip install -r requirements.txt
 
-# 2. Run with environment
-docker run -it \
-  -e ANTHROPIC_API_KEY="your-key" \
-  -e SCIMCP_DATA_PATH="/data/papers.parquet" \
-  -p 8000:8000 \
-  llm-survey
+# 2. Set up environment
+export ANTHROPIC_API_KEY="your-key"
+export SCIMCP_DATA_PATH="/path/to/papers.parquet"
 
 # 3. Access API
 curl http://localhost:8000/health
@@ -152,13 +149,6 @@ python scripts/experiments/run_50_paper_experiment.py --batch-size 10
 python scripts/demos/simplified_demo.py --use-cache
 ```
 
-### Docker Permission Denied
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-# Or run with sudo
-sudo docker build -t llm-survey .
-```
 
 ## Performance Validation
 
