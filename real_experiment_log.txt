@@ -1,0 +1,14 @@
+INFO:__main__:======================================================================
+INFO:__main__:REAL EXPERIMENT: 5 Papers
+INFO:__main__:Mode: Actual Processing (No Simulation)
+INFO:__main__:======================================================================
+INFO:__main__:
+[Phase 1/5] Initializing components...
+INFO:__main__:
+[Phase 2/5] Loading papers...
+INFO:src.data.data_loader:Loaded 126429 papers from cache
+INFO:src.data.data_loader:Loading BM25 index from cache
+INFO:__main__:Found 5 papers
+INFO:__main__:
+[Phase 3/5] Running baseline AutoSurvey...
+INFO:src.baselines.autosurvey:Generating AutoSurvey baseline for 'LLM Agents and Tool Use' with 5 papers

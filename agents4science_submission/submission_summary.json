@@ -1,0 +1,22 @@
+{
+  "submission": {
+    "title": "LLM Surveying LLMs: Global Verification-Driven Iteration for Automated Scientific Survey Generation",
+    "conference": "Agents4Science 2025",
+    "key_claim": "26.1% improvement over baseline with statistical significance (p < 0.001)",
+    "validation": {
+      "10_papers": "26.2% improvement",
+      "20_papers": "26.2% improvement",
+      "55_papers": "26.1% improvement (p < 0.001, Cohen's d = 5.41)"
+    },
+    "innovations": [
+      "Global verification-driven iteration",
+      "Targeted improvement based on weaknesses",
+      "Automated trend discovery with COLM taxonomy"
+    ],
+    "reproducibility": {
+      "data": "126,429 papers from sciMCP",
+      "code": "Complete implementation included",
+      "experiments": "Three validation levels (10, 20, 55 papers)"
+    }
+  }
+}

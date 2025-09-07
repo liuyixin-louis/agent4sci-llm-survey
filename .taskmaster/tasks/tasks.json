@@ -1,0 +1,331 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Data Infrastructure and Processing Pipeline",
+        "description": "Load and prepare the sciMCP database, build BM25 index for fast retrieval, and implement data filtering and caching mechanisms for CS.AI, CS.CL, CS.LG papers from 2023-2025",
+        "details": "Load the parquet file from '/data/yixin/workspace/sciMCP/data/all_papers.parquet' using pandas or pyarrow. Filter papers by categories (CS.AI, CS.CL, CS.LG) and date range (2023-2025). Build BM25 index using rank_bm25 library for CPU-based retrieval. Implement caching mechanism using pickle to store processed data at 'data/processed_papers.pkl' and 'data/bm25_index.pkl'. Create data loader classes with methods for querying by keywords, date ranges, and categories. Ensure memory-efficient chunk processing for large dataset handling.",
+        "testStrategy": "Verify data loading by checking paper count matches expected range (should be ~50-100k papers after filtering). Test BM25 index by performing sample queries and measuring retrieval time (<1 second for 1000 papers). Validate filtering by checking random samples have correct categories and dates. Test cache functionality by loading from cache and comparing with fresh load.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Claude CLI Wrapper Integration",
+        "description": "Create a robust wrapper for Claude CLI integration supporting haiku, sonnet, and opus models with rate limiting, error handling, and response caching",
+        "details": "Implement ClaudeCodeCLIWrapper class in 'src/wrappers/claude_wrapper.py' based on the existing wrapper at '/data2/yixin/workspace/agent4sci-llm-survey/scripts/README.md'. Add methods for chat_completion with model selection (haiku for fast tasks, sonnet for balanced, opus for complex). Implement rate limiting with 3-5 second delays between calls using time.sleep(). Add exponential backoff for retries on API errors. Create response caching using hashlib for prompt hashing and pickle for storage. Include token counting and cost tracking functionality. Add streaming support for long responses.",
+        "testStrategy": "Test all three models (haiku, sonnet, opus) with sample prompts. Verify rate limiting by timing consecutive calls (should be >3 seconds apart). Test error handling by simulating API failures. Validate caching by making identical requests and checking response times. Monitor token usage and costs across 10 test calls.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Develop Hierarchical Topic Discovery System",
+        "description": "Build automated trend discovery system using COLM taxonomy to identify trending subtopics from broad keywords by analyzing publication velocity and acceleration",
+        "details": "Create HierarchicalTopicDiscovery class in 'src/discovery/topic_discovery.py'. Implement COLM taxonomy with 18 categories (alignment, data, evaluation, safety, efficiency, inference, multimodal, applications, etc.). Develop multi-source paper aggregation combining sciMCP database, arXiv API (using arxiv library), and Semantic Scholar API. Implement temporal trend detection calculating weekly publication counts, velocity (first derivative), and acceleration (second derivative). Add LLM-based novelty assessment using Claude haiku for categorization. Create trend scoring algorithm: velocity*0.4 + acceleration*0.3 + novelty*0.3. Include methods for merging and deduplicating papers by title similarity using fuzzywuzzy or similar library.",
+        "testStrategy": "Test discovery on 'LLM' keyword for last 30 days, should identify 5-10 trending topics. Verify COLM categorization accuracy by manually checking 20 papers. Test temporal metrics calculation with synthetic data having known trends. Validate multi-source aggregation by checking for duplicates. Measure discovery runtime (should be <5 minutes for 500 papers).",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Reproduce AutoSurvey Baseline System",
+        "description": "Implement faithful reproduction of AutoSurvey approach including chunk-based outline generation, parallel section writing, and Local Coherence Enhancement (LCE)",
+        "details": "Create AutoSurveyBaseline class in 'src/baselines/autosurvey.py'. Implement chunk-based outline generation dividing papers into chunks of 30-50 papers, generating partial outlines with Claude sonnet, then merging outlines. Add parallel section writing using ThreadPoolExecutor for concurrent section generation with Claude haiku. Implement RAG-based citation injection matching paper content to section text. Create AutoSurveyLCE class in 'src/baselines/autosurvey_lce.py' adding 2-pass Local Coherence Enhancement refining odd sections first, then even sections for smooth transitions. Include citation verification ensuring all claims have supporting citations.",
+        "testStrategy": "Generate baseline survey on a small test topic (10-20 papers). Verify outline has 6-8 sections with clear structure. Test parallel section writing produces 500-700 words per section. Validate LCE improves transition coherence (manual inspection). Check citation recall >75% and precision >70%.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Build Global Iterative Improvement System",
+        "description": "Develop our novel global verification-driven iteration system with multi-criteria evaluation, dynamic iteration count, and convergence tracking",
+        "details": "Create IterativeSurveySystem class in 'src/our_system/iterative.py'. Implement GlobalVerifier in 'src/our_system/verifier.py' using Claude opus for multi-criteria evaluation (coverage, structure, citations, coherence, insights) on 1-5 scale. Develop TargetedImprover in 'src/our_system/improver.py' analyzing verification results, identifying weaknesses, generating specific improvements with Claude sonnet. Add convergence detection checking if quality score >4.5, citation recall >80%, no critical issues for 3 consecutive iterations. Implement checkpoint management saving survey state after each iteration. Create iteration controller with dynamic count (3-5 typical, max 10) and early stopping.",
+        "testStrategy": "Run system on test topic tracking quality scores across iterations. Verify convergence within 3-5 iterations. Test targeted improvements address identified weaknesses. Validate checkpoint recovery by simulating failures. Check final survey quality >4.0 average score.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          4
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Comprehensive Evaluation Framework",
+        "description": "Create evaluation system measuring citation quality, content quality, and performance metrics for comparing baseline and iterative approaches",
+        "details": "Develop evaluation metrics in 'src/evaluation/metrics.py'. Implement citation quality metrics: recall (% claims with citations), precision (% relevant citations), F1 score. Add content quality evaluation using Claude opus to score coverage, structure, relevance on 1-5 scale. Create performance metrics tracking iteration count, convergence time, token usage, API costs. Build Comparator class in 'src/evaluation/comparator.py' for side-by-side comparison of surveys, statistical significance testing using scipy.stats, generating comparison tables and visualizations. Add ablation study support testing without global verification, without iteration, with different iteration counts.",
+        "testStrategy": "Validate citation metrics on manually annotated test set (20 claims). Test content scoring consistency by evaluating same survey 3 times (variance <0.2). Verify statistical tests with known distributions. Check visualization generation creates valid plots.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Design and Execute Main Experiments",
+        "description": "Run comprehensive experiments comparing AutoSurvey baseline, AutoSurvey with LCE, and our iterative system on discovered trending topics",
+        "details": "Create experiment runner in 'src/experiments/run_experiments.py'. Implement experiment configuration with topics discovered from trend analysis or fallback topics ('LLM Agents and Tool Use', 'In-context Learning'). Run three systems: AutoSurvey without LCE, AutoSurvey with LCE, Our iterative system (max 5 iterations). Collect all metrics: citation quality, content quality scores, convergence data, resource usage. Save intermediate results after each iteration in 'outputs/checkpoints/'. Generate surveys for each topic-system combination saving to 'outputs/surveys/'. Track timing data and API costs. Implement error recovery to resume failed experiments.",
+        "testStrategy": "Run small-scale test with 20 papers before full experiments. Verify all three systems produce complete surveys. Check metrics collection captures all required data. Test checkpoint recovery by interrupting and resuming. Validate output format matches expected structure.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Analyze Results and Generate Visualizations",
+        "description": "Process experimental results, perform statistical analysis, and create publication-quality visualizations demonstrating improvements and convergence",
+        "details": "Implement result analyzer in 'src/experiments/analyze_results.py'. Calculate improvement percentages comparing our system to baselines. Perform statistical significance testing using paired t-tests or Wilcoxon signed-rank tests. Generate convergence plots showing quality scores vs iterations using matplotlib/seaborn. Create comparison tables with citation recall, precision, content scores for all systems. Build quality improvement bar charts highlighting gains. Generate pipeline diagrams using graphviz or matplotlib. Export all figures to 'outputs/figures/' in high resolution (300 DPI). Create LaTeX-ready tables for paper inclusion.",
+        "testStrategy": "Verify statistical tests with known data producing expected p-values. Check visualizations render correctly and are readable. Test LaTeX table generation produces valid syntax. Validate all metrics are accurately calculated from raw data.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Write Conference Paper",
+        "description": "Compose 8-page conference paper for Agents4Science 2025 following specified outline with methodology, experiments, results, and discussion sections",
+        "details": "Create paper structure following Agents4Science format (8 pages). Write abstract (0.5 page) highlighting AI-generated survey innovation and 5-10% quality improvement. Develop introduction (1 page) explaining meta-recursive nature of LLMs studying LLM research. Compose related work (0.5 page) comparing to AutoSurvey, PASA, IMO25. Detail methodology (2 pages) describing iterative framework, verification system, trend discovery. Present experiments (2 pages) with setup, datasets, baseline comparisons. Report results (1.5 pages) with comparison tables, convergence analysis, statistical significance. Write discussion (1 page) on when iteration helps most, limitations, future work. Craft conclusion (0.5 page) summarizing contributions. Ensure AI authorship transparency throughout.",
+        "testStrategy": "Check paper length stays within 8-page limit. Verify all citations are properly formatted. Test figure/table references are correct. Validate conference format compliance. Review for clarity and coherence with external reader.",
+        "priority": "high",
+        "dependencies": [
+          7,
+          8
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Package and Deploy Final Deliverables",
+        "description": "Prepare complete submission package including code repository, experimental data, paper, and reproducibility instructions for conference submission",
+        "details": "Organize code repository with clear structure: src/, data/, outputs/, docs/. Create comprehensive README.md with installation instructions, dependency requirements (requirements.txt), usage examples. Document all command-line arguments and configuration options. Package experimental data including all generated surveys, metrics JSON files, convergence data. Prepare reproducibility package with seeds for randomness, exact model versions, step-by-step reproduction guide. Create Docker container or virtual environment specification. Generate supplementary materials with additional ablation studies, extended results. Prepare submission ZIP following conference requirements. Create GitHub repository (if allowed) with proper licensing.",
+        "testStrategy": "Test clean installation on fresh environment following README. Verify all scripts run without errors from documentation. Check reproducibility by re-running one experiment and comparing results. Validate submission package meets all conference requirements.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          9
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Execute Full-Scale LLM Agents Experiment with 50+ Papers",
+        "description": "Run comprehensive full-scale experiment on 'LLM Agents' topic using 50+ papers to empirically validate the claimed 26% improvement through rigorous testing with real research data instead of demonstration examples",
+        "details": "Create full-scale experiment runner in 'src/experiments/full_scale_llm_agents.py' extending the existing experiment framework. Configure experiment to fetch and process 50+ recent papers on 'LLM Agents' topic from ArXiv/Semantic Scholar APIs (2023-2024 publications). Implement paper collection pipeline: query for 'LLM agents', 'agent frameworks', 'tool-augmented LLMs', filter by citation count >5, download PDFs and extract text. Set up three experimental conditions using existing systems: baseline AutoSurvey without LCE, AutoSurvey with LCE enabled, our iterative system with max 7 iterations for thorough convergence. Configure evaluation to track detailed metrics: citation recall/precision per section, content quality scores (coverage, coherence, depth), iteration-wise improvements, token usage and API costs, time to convergence. Implement robust error handling for paper processing failures, API timeouts, partial results. Add checkpointing every 10 papers processed to enable resume on failure. Store all intermediate outputs in 'outputs/full_scale/llm_agents/' with timestamps. Generate comprehensive comparison report showing percentage improvements, statistical significance (p-values), convergence patterns, quality score distributions. Export results in multiple formats: JSON for raw data, CSV for analysis, LaTeX tables for paper. Implement parallel processing where possible to reduce runtime while respecting API rate limits.",
+        "testStrategy": "Run preliminary test with first 5 papers to verify pipeline functionality. Check paper fetching returns relevant LLM agent papers with proper metadata. Validate all three systems produce complete surveys for test subset. Verify metrics calculation matches manual spot-checks on 3 sample surveys. Test checkpoint recovery by interrupting after 25 papers and resuming. Confirm statistical tests produce valid p-values and confidence intervals. Validate 26% improvement claim by comparing final metrics against baseline. Check all output files are generated in correct formats and locations. Monitor API usage stays within rate limits throughout execution. Verify reproducibility by running subset twice with same seed.",
+        "status": "done",
+        "dependencies": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Create Docker Container for Easy Deployment",
+        "description": "Build a production-ready Docker container with all project dependencies pre-installed, including Claude CLI integration, Python packages, and system requirements for seamless deployment",
+        "details": "Create Dockerfile in project root with multi-stage build for efficiency. Use Python 3.9+ base image (python:3.9-slim). Install system dependencies: git, curl, nodejs, npm for Claude CLI. Set up Python environment with pip install from requirements.txt including numpy, pandas, matplotlib, seaborn, scikit-learn, arxiv, requests, beautifulsoup4. Configure Claude CLI installation using npm install -g @anthropic-ai/claude-cli. Set up environment variables for API keys (ANTHROPIC_API_KEY, PERPLEXITY_API_KEY, OPENAI_API_KEY) with ARG/ENV pattern for build-time configuration. Create working directory /app and copy source code. Set up volume mounts for /app/data, /app/outputs, /app/cache directories. Configure entrypoint script 'docker-entrypoint.sh' for initialization tasks like cache directory creation, API key validation. Add docker-compose.yml for orchestration with services definition, environment variable management, volume persistence. Include .dockerignore to exclude unnecessary files (*.pyc, __pycache__, .git, outputs/). Document container usage in deployment/DOCKER_README.md with build instructions, run commands, environment variable configuration, volume mapping examples. Optimize image size using multi-stage builds, combining RUN commands, cleaning apt cache.",
+        "testStrategy": "Build Docker image and verify no build errors occur. Test container startup with docker run checking all services initialize. Validate Claude CLI installation by running claude --version inside container. Test Python environment by importing all required packages. Verify API key injection by checking environment variables are set correctly. Test volume mounting by creating test files in mounted directories and confirming persistence. Run a minimal experiment inside container to validate full functionality. Check image size is under 2GB for reasonable deployment. Test docker-compose up brings up all services correctly. Validate reproducibility by building on different machines.",
+        "status": "done",
+        "dependencies": [
+          10
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Create comprehensive unit tests for all major components with pytest, achieving at least 80% code coverage",
+        "description": "Develop a comprehensive test suite using pytest framework to validate all major system components including wrappers, baselines, iterative system, evaluation metrics, and experiment runners, achieving minimum 80% code coverage",
+        "details": "Set up pytest testing framework in 'tests/' directory with proper structure mirroring src/. Create test configuration in 'pytest.ini' with coverage settings and test discovery patterns. Implement unit tests for ClaudeCodeCLIWrapper in 'tests/test_wrappers/test_claude_wrapper.py' testing model selection, rate limiting, error handling, caching mechanisms. Write tests for AutoSurveyBaseline in 'tests/test_baselines/test_autosurvey.py' validating chunk-based outline generation, parallel section writing, citation injection. Test IterativeSurveySystem in 'tests/test_our_system/test_iterative.py' covering GlobalVerifier scoring, TargetedImprover improvements, convergence detection. Create evaluation metrics tests in 'tests/test_evaluation/test_metrics.py' for citation quality (recall/precision/F1), content quality scoring, performance tracking. Test HierarchicalTopicDiscovery in 'tests/test_discovery/test_topic_discovery.py' validating COLM categorization, trend detection, multi-source aggregation. Implement integration tests in 'tests/test_integration/' for end-to-end workflows. Use pytest fixtures for reusable test data, mock external API calls using pytest-mock, implement parametrized tests for multiple scenarios. Configure pytest-cov for coverage reporting with HTML output, set minimum coverage threshold at 80%. Create GitHub Actions workflow in '.github/workflows/tests.yml' for CI/CD testing on each commit.",
+        "testStrategy": "Run pytest with coverage report (pytest --cov=src --cov-report=html --cov-report=term) verifying 80%+ coverage achieved. Execute all unit tests ensuring 100% pass rate with no failures or errors. Validate mock API calls don't make real requests by monitoring network traffic. Test fixture reusability by running tests in random order (pytest --random-order). Verify parametrized tests cover edge cases including empty inputs, malformed data, API failures. Check integration tests complete full workflow from paper fetching to survey generation. Validate CI/CD workflow triggers on push/PR and reports coverage. Review HTML coverage report identifying any untested code paths. Performance test ensuring test suite completes in under 5 minutes for rapid development feedback.",
+        "status": "done",
+        "dependencies": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Create interactive web API using FastAPI for survey generation with endpoints for uploading papers, triggering survey generation, and monitoring progress with real-time updates",
+        "description": "Build a REST API using FastAPI framework that provides web endpoints for users to upload research papers, initiate survey generation using the iterative system, and monitor real-time progress updates through WebSocket connections",
+        "details": "Create FastAPI application in 'src/api/main.py' with comprehensive REST endpoints and WebSocket support. Implement '/upload' POST endpoint accepting multiple PDF files or paper URLs, storing them in 'uploads/' directory with unique session IDs, extracting metadata (title, authors, abstract) using PyPDF2 or pdfplumber. Add '/surveys' POST endpoint to trigger survey generation accepting parameters: topic name, paper_ids list, system_type (baseline/lce/iterative), max_iterations, model_preferences. Implement background task processing using FastAPI BackgroundTasks or Celery for async survey generation, maintaining job queue with status tracking in 'src/api/job_manager.py'. Create '/surveys/{survey_id}/status' GET endpoint returning current progress: iteration number, current phase (outline/writing/verification/improvement), quality scores, estimated time remaining. Add WebSocket endpoint at '/ws/{survey_id}' for real-time updates using FastAPI WebSockets, broadcasting progress messages every 5-10 seconds, sending iteration results and quality metrics as they complete. Implement '/surveys/{survey_id}' GET endpoint to retrieve completed survey in multiple formats (markdown, PDF, HTML). Add '/papers' GET endpoint with pagination for listing uploaded papers with metadata. Create error handling middleware catching exceptions from survey generation, returning structured error responses with status codes. Implement request validation using Pydantic models for all endpoints. Add authentication using API keys stored in environment variables. Set up CORS middleware for cross-origin requests. Create Docker integration updating existing Dockerfile to include FastAPI with uvicorn server. Implement rate limiting using slowapi to prevent abuse (10 requests/minute for survey generation). Add comprehensive logging using Python logging module tracking API calls, generation progress, errors. Create API documentation with interactive Swagger UI at '/docs' endpoint.",
+        "testStrategy": "Test file upload endpoint with multiple PDF files verifying storage and metadata extraction. Validate survey generation endpoint triggers background task and returns job ID immediately. Test WebSocket connection receives real-time updates during survey generation. Verify status endpoint accurately reports progress through all phases. Test concurrent survey generation handling multiple requests without conflicts. Validate error handling by submitting invalid papers or triggering failures. Test rate limiting blocks excessive requests appropriately. Verify Docker container runs FastAPI server accessible on port 8000. Test API documentation loads and allows interactive testing. Monitor memory usage during long-running survey generation. Validate all endpoints return proper HTTP status codes. Test CORS headers allow cross-origin requests from test frontend.",
+        "status": "done",
+        "dependencies": [
+          5,
+          6,
+          12
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up FastAPI application structure and core dependencies",
+            "description": "Initialize FastAPI application with proper project structure, install required dependencies, and configure basic middleware including CORS, logging, and error handling",
+            "dependencies": [],
+            "details": "Create 'src/api/' directory structure with main.py as entry point. Install FastAPI, uvicorn, python-multipart for file uploads, PyPDF2/pdfplumber for PDF processing, slowapi for rate limiting, and python-jose for API key authentication. Set up FastAPI app instance with title='Survey Generation API', version='1.0.0'. Configure CORS middleware allowing origins from environment variable ALLOWED_ORIGINS (default ['*']). Implement global exception handler catching all exceptions and returning structured JSON responses with status codes. Set up Python logging configuration in 'src/api/logger.py' with rotating file handler writing to 'logs/api.log'. Create Pydantic models directory 'src/api/models/' for request/response schemas. Initialize environment variable loading from .env file for API keys and configuration.",
+            "status": "done",
+            "testStrategy": "Test FastAPI application starts without errors using pytest with TestClient. Verify CORS headers are correctly set in responses. Test exception handler returns proper JSON format for various error types. Validate logging writes to file with correct format and rotation."
+          },
+          {
+            "id": 2,
+            "title": "Implement paper upload and metadata extraction endpoints",
+            "description": "Create endpoints for uploading PDF files and URLs, extracting metadata from papers, and managing uploaded papers with pagination",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Implement '/upload' POST endpoint in 'src/api/endpoints/papers.py' accepting List[UploadFile] for PDFs and List[str] for URLs. Generate unique session IDs using UUID4 for each upload batch. Store files in 'uploads/{session_id}/' directory creating folders if not exist. Implement metadata extraction in 'src/api/services/pdf_processor.py' using PyPDF2 to extract title from first page, pdfplumber for text extraction, regex patterns for finding authors and abstract sections. Create Paper model in 'src/api/models/paper.py' with fields: id, session_id, filename, title, authors, abstract, upload_time, file_path. Store metadata in 'src/api/database/papers_db.py' using SQLite with SQLAlchemy ORM. Implement '/papers' GET endpoint with query parameters: page (default 1), page_size (default 20), session_id (optional filter). Return paginated response with total_count, current_page, papers list. Add '/papers/{paper_id}' GET endpoint returning detailed paper information including extracted text preview.",
+            "status": "done",
+            "testStrategy": "Test PDF upload with multiple files verifying unique session IDs generated and files stored correctly. Validate metadata extraction with sample PDFs containing various formats. Test pagination returns correct subset of papers. Verify URL upload downloads and processes papers correctly."
+          },
+          {
+            "id": 3,
+            "title": "Create survey generation endpoints with background task processing",
+            "description": "Implement endpoints to trigger survey generation with background task processing, job queue management, and status tracking",
+            "dependencies": [
+              "14.2"
+            ],
+            "details": "Create '/surveys' POST endpoint in 'src/api/endpoints/surveys.py' accepting SurveyRequest model with fields: topic_name, paper_ids, system_type (enum: baseline/lce/iterative), max_iterations (default 3), model_preferences (dict). Implement job queue in 'src/api/services/job_manager.py' using Python's asyncio with Queue for in-memory job storage, or integrate Celery with Redis for production. Create Job model with fields: survey_id (UUID4), status (pending/running/completed/failed), created_at, started_at, completed_at, progress_data (JSON), result_path. Implement background task function in 'src/api/services/survey_generator.py' that imports appropriate system based on system_type, loads papers from database using paper_ids, initializes survey system with model_preferences, executes generation storing progress updates in job.progress_data. Create '/surveys/{survey_id}/status' GET endpoint returning JobStatus model with current_iteration, current_phase, quality_scores, estimated_time_remaining calculated from average iteration time. Implement '/surveys/{survey_id}' GET endpoint checking job completion status, reading generated survey from result_path, supporting format query parameter (markdown/pdf/html) with on-the-fly conversion using markdown2 and weasyprint.",
+            "status": "done",
+            "testStrategy": "Test survey creation endpoint returns job ID immediately without blocking. Verify background task updates job status correctly through lifecycle. Test status endpoint returns accurate progress information. Validate completed survey retrieval in all formats."
+          },
+          {
+            "id": 4,
+            "title": "Implement WebSocket support for real-time progress updates",
+            "description": "Add WebSocket endpoint for real-time survey generation progress updates with connection management and broadcasting",
+            "dependencies": [
+              "14.3"
+            ],
+            "details": "Create WebSocket manager in 'src/api/services/websocket_manager.py' using singleton pattern to manage active connections per survey_id. Implement connection pool with dict mapping survey_id to list of WebSocket connections. Add '/ws/{survey_id}' WebSocket endpoint in 'src/api/endpoints/websocket.py' accepting connections, validating survey_id exists, adding connection to manager pool. Modify survey_generator.py to send progress updates every 5 seconds using websocket_manager.broadcast(survey_id, message) with message containing: iteration_number, phase, timestamp, metrics dict, estimated_remaining_seconds. Implement heartbeat mechanism sending ping every 30 seconds to detect disconnected clients. Create message types: 'progress' for iteration updates, 'quality' for quality score updates, 'error' for generation errors, 'complete' for final survey ready. Add connection cleanup on client disconnect removing from connection pool. Implement max connections limit (100 per survey) with appropriate error response. Create demo WebSocket client in 'src/api/static/ws_demo.html' showing real-time updates with progress bar and metrics visualization.",
+            "status": "done",
+            "testStrategy": "Test WebSocket connection establishment and message reception using websocket-client library. Verify multiple clients receive broadcast messages simultaneously. Test connection cleanup on disconnect. Validate heartbeat keeps connections alive."
+          },
+          {
+            "id": 5,
+            "title": "Add authentication, rate limiting, and Docker integration",
+            "description": "Implement API key authentication, rate limiting to prevent abuse, comprehensive API documentation, and update Docker configuration for deployment",
+            "dependencies": [
+              "14.4"
+            ],
+            "details": "Implement API key authentication in 'src/api/middleware/auth.py' using HTTPBearer security scheme. Store API keys in environment variable API_KEYS as comma-separated list. Create dependency get_api_key validating Bearer token against API_KEYS list. Apply authentication to all endpoints except /docs and /ws using Depends(get_api_key). Implement rate limiting using slowapi in 'src/api/middleware/rate_limit.py' with limits: 10/minute for /surveys POST, 100/minute for /papers GET, 50/minute for /upload POST. Add rate limit headers X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset. Configure automatic API documentation with custom title and description, adding example requests/responses to all endpoints using Pydantic model examples. Update existing Dockerfile adding FastAPI layer: COPY src/api requirements-api.txt, RUN pip install -r requirements-api.txt, EXPOSE 8000, CMD ['uvicorn', 'src.api.main:app', '--host', '0.0.0.0', '--port', '8000']. Create docker-compose.yml with services: api (FastAPI), redis (for Celery if used), nginx (reverse proxy). Add health check endpoint '/health' returning service status and version. Create deployment script 'scripts/deploy_api.sh' building Docker image and running with proper environment variables.",
+            "status": "done",
+            "testStrategy": "Test API key validation accepts valid keys and rejects invalid ones. Verify rate limiting blocks excessive requests and returns 429 status. Test Docker container starts and responds to health checks. Validate API documentation generates correctly at /docs endpoint."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Create comprehensive Jupyter notebook examples demonstrating system usage",
+        "description": "Build interactive Jupyter notebooks showcasing data loading, survey generation comparison between baseline and iterative systems, result visualization, and API integration examples for users to understand and test the system capabilities",
+        "details": "Create a comprehensive set of Jupyter notebooks in 'notebooks/' directory demonstrating all major system functionalities. Develop 'notebooks/01_data_loading_example.ipynb' showing how to load papers from multiple sources: sciMCP database queries, arXiv API searches with date ranges and keywords, Semantic Scholar API integration, local PDF file uploads, and CSV/JSON imports with paper metadata. Create 'notebooks/02_survey_generation_comparison.ipynb' implementing side-by-side comparison of all three systems (AutoSurvey baseline, AutoSurvey with LCE, Iterative system) on the same topic, displaying generation progress with tqdm progress bars, showing intermediate outputs at each iteration, comparing final survey quality metrics, and visualizing token usage and API costs. Build 'notebooks/03_results_visualization.ipynb' with comprehensive visualizations including: quality score evolution across iterations (line plots), citation metrics comparison (bar charts), word cloud generation from survey content, temporal trend analysis of discovered topics, convergence patterns with matplotlib animations, and statistical significance testing results. Develop 'notebooks/04_api_integration_example.ipynb' demonstrating FastAPI usage: uploading papers via REST endpoints, triggering survey generation with different configurations, monitoring real-time progress via WebSocket connections, retrieving completed surveys and metrics, and batch processing multiple topics. Add 'notebooks/05_quick_start_tutorial.ipynb' as an entry point for new users with step-by-step walkthrough of generating first survey, explanation of configuration options, common troubleshooting tips, and links to advanced examples. Include utility notebook 'notebooks/utils/notebook_helpers.py' with reusable functions for data loading, visualization templates, and metric calculations. Ensure all notebooks have clear markdown documentation between code cells, use consistent styling and color schemes for visualizations, include error handling and validation checks, save outputs to 'outputs/notebook_results/' directory, and support both local and Docker container execution environments.",
+        "testStrategy": "Execute all notebooks end-to-end using jupyter nbconvert --execute to verify no errors occur. Test data loading notebook with 5 different paper sources confirming successful imports and metadata extraction. Validate survey comparison notebook generates all three survey types and produces comparison metrics within expected ranges (quality scores 3.0-5.0, citation recall 60-90%). Check visualization notebook creates all specified plots without errors and saves high-resolution images to outputs directory. Test API integration notebook by starting FastAPI server and confirming all demonstrated endpoints work correctly with mock data. Verify quick start tutorial completes in under 10 minutes for a new user following instructions. Test notebooks work in both local Python environment and Docker container with same results. Validate all visualizations are readable and informative by manual inspection. Ensure notebook outputs are reproducible by running twice with same inputs and comparing results. Check memory usage stays below 4GB during execution to support standard development machines.",
+        "status": "done",
+        "dependencies": [
+          4,
+          5,
+          6,
+          14
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Create comprehensive test suite achieving 80% code coverage for all modules",
+        "description": "Build an extensive test suite using pytest framework that covers all system modules including unit tests, integration tests, and end-to-end tests, achieving minimum 80% code coverage across the entire codebase",
+        "details": "Expand the existing test infrastructure in 'tests/' directory to achieve comprehensive coverage. Create additional unit tests for untested components in 'tests/test_discovery/' for HierarchicalTopicDiscovery class testing COLM taxonomy categorization, trend detection algorithms, and multi-source aggregation. Develop integration tests in 'tests/integration/' validating end-to-end workflows: paper discovery → survey generation → evaluation pipeline, API endpoint integration with survey systems, Docker container functionality with all dependencies. Implement end-to-end tests in 'tests/e2e/' simulating real user scenarios: uploading papers via API and generating surveys, running complete experiments with all three systems, WebSocket real-time updates during processing. Add performance tests in 'tests/performance/' measuring response times for API endpoints under load, memory usage during large survey generation (100+ papers), concurrent request handling capabilities. Create fixture factories in 'tests/fixtures/' for generating mock paper data, sample survey outputs, API response mocks. Implement custom pytest plugins in 'tests/plugins/' for test result reporting, coverage gap analysis, automatic test categorization. Set up continuous integration hooks in '.github/workflows/test.yml' running tests on every commit, generating coverage reports with codecov integration, failing builds if coverage drops below 80%. Add mutation testing using mutmut to verify test quality, ensuring tests actually catch bugs. Document testing best practices in 'tests/README.md' including how to run specific test categories, debugging failed tests, adding new test cases.",
+        "testStrategy": "Execute full test suite with pytest --cov=src --cov-report=html --cov-report=term-missing verifying 80%+ overall coverage achieved. Run coverage report analysis identifying any modules below 70% coverage and address gaps. Execute integration tests with docker-compose ensuring all services communicate correctly. Run end-to-end tests against live API verifying complete user workflows function properly. Perform load testing with locust simulating 50 concurrent users confirming system stability. Execute mutation testing with mutmut run ensuring mutation score >60% indicating robust tests. Validate CI/CD pipeline triggers on test commits and blocks merges if coverage drops. Review HTML coverage report ensuring critical paths have 90%+ coverage. Test fixture generation creates realistic mock data matching production patterns. Verify test execution time remains under 5 minutes for rapid development feedback.",
+        "status": "done",
+        "dependencies": [
+          13,
+          14,
+          15
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Run comprehensive system validation with real papers from SciMCP database",
+        "description": "Execute end-to-end validation tests using real research papers from the SciMCP database, generating complete surveys for 'LLM Agents and Tool Use' and 'In-context Learning' topics while measuring quality scores, performance metrics, and system reliability",
+        "details": "Create validation runner in 'src/validation/comprehensive_validation.py' implementing full system testing with real data. Configure SciMCP database connection using existing wrapper from task 2, querying for papers on 'LLM Agents and Tool Use' (50+ papers from 2023-2024) and 'In-context Learning' (50+ papers from 2023-2024). Implement paper retrieval pipeline: execute SciMCP queries with filters for publication date >= 2023, citation count >= 5, venue quality metrics, download full-text PDFs when available, extract abstracts and metadata. Set up validation experiments for both topics running all three systems: baseline AutoSurvey without LCE, AutoSurvey with LCE enabled, iterative system with max 5 iterations. Implement comprehensive metrics collection: citation quality (precision, recall, F1), content quality scores (coverage, coherence, depth, novelty), performance metrics (time per iteration, token usage, API costs), convergence patterns for iterative system. Create real-time monitoring dashboard in 'src/validation/monitor.py' displaying: current progress percentage, active system and iteration, quality scores evolution, estimated completion time. Implement error recovery mechanisms: automatic retry on API failures (max 3 attempts), checkpoint saving after each completed survey section, ability to resume from last checkpoint. Generate detailed validation reports in 'outputs/validation/': individual survey outputs for each system/topic combination, comparative analysis tables, quality score distributions, performance benchmark charts. Add statistical significance testing comparing systems using paired t-tests on quality metrics. Create validation summary in JSON format with pass/fail criteria: minimum citation recall 75%, minimum content quality 4.0/5.0, maximum generation time 30 minutes per survey, convergence within 5 iterations for iterative system. Implement data versioning to track which papers were used in validation for reproducibility.",
+        "testStrategy": "Execute validation with subset of 5 papers first to verify pipeline functionality and estimate full runtime. Validate SciMCP queries return relevant papers with proper metadata by manually checking 10 random results. Run all three systems on test subset ensuring complete survey generation without errors. Monitor resource usage during validation ensuring memory usage stays below 16GB and no memory leaks occur. Verify checkpoint recovery by intentionally interrupting validation mid-process and confirming successful resume. Test quality metrics calculation by manually scoring 3 sample surveys and comparing with automated scores (deviation < 0.3). Validate statistical tests by running on synthetic data with known distributions. Check all output files are generated in correct formats and locations. Measure total validation runtime ensuring completion within 4 hours for both topics. Verify validation reports contain all required metrics and visualizations are properly rendered. Test error recovery by simulating API failures and confirming automatic retry logic works correctly. Validate reproducibility by running validation twice with same paper set and comparing results (quality scores within 5% variance).",
+        "status": "done",
+        "dependencies": [
+          5,
+          6,
+          7,
+          11,
+          13,
+          15,
+          16
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Create final submission package with organized directory structure",
+        "description": "Build a comprehensive submission package containing all project deliverables including source code, documentation, demo scripts, validation results, and a detailed README for judges explaining system setup, execution, and evaluation procedures",
+        "details": "Create 'submission/' directory as the main package root with organized subdirectories. Set up 'submission/src/' containing all source code from the project, ensuring all modules are properly packaged with __init__.py files. Copy Docker configuration from Task 12 into 'submission/docker/' including Dockerfile, docker-compose.yml, and .env.example with placeholder API keys. Package Jupyter notebooks from Task 15 into 'submission/notebooks/' with clear numbering (01_data_loading.ipynb, 02_survey_comparison.ipynb, 03_api_demo.ipynb). Include test suite from Tasks 13 and 16 in 'submission/tests/' with pytest configuration and coverage reports in HTML format. Create 'submission/docs/' containing API documentation generated from FastAPI (Task 14), evaluation metrics documentation, and system architecture diagrams. Add 'submission/results/' with pre-generated survey outputs from Task 7 experiments, evaluation reports comparing all three systems, performance metrics and convergence graphs. Create 'submission/scripts/' with quick-start scripts: setup.sh for environment setup, run_demo.sh for interactive demo, evaluate.sh for running evaluation suite. Write comprehensive README.md at submission root with sections: System Overview (2-3 paragraphs), Quick Start Guide (Docker and local setup options), API Usage Examples with curl commands, Evaluation Instructions for reproducing results, Project Structure explanation, Dependencies and Requirements (Python 3.9+, Docker, API keys needed), Troubleshooting common issues. Include 'submission/requirements.txt' with all Python dependencies versioned. Add 'submission/LICENSE' and 'submission/CITATION.bib' for proper attribution. Create 'submission/.gitignore' to exclude unnecessary files. Generate 'submission/validation/' containing unit test results, coverage reports, and integration test logs proving system functionality",
+        "testStrategy": "Verify submission package completeness by checking all required directories exist (src/, docker/, notebooks/, tests/, docs/, results/, scripts/). Test Docker build from submission/docker/ directory ensuring image builds without errors. Execute setup.sh script in fresh environment confirming all dependencies install correctly. Run demo script (run_demo.sh) validating it completes without errors and produces expected output. Test README instructions by following them step-by-step in clean environment. Verify all Jupyter notebooks run without errors using nbconvert. Check test suite runs from submission directory achieving 80%+ coverage. Validate API documentation loads correctly and all endpoints are documented. Confirm pre-generated results in results/ directory include surveys from all three systems. Test evaluation script reproduces reported metrics within 5% variance. Verify package size is under 500MB (excluding large model files). Check all source files have proper headers and documentation. Validate LICENSE and CITATION files are present and correct",
+        "status": "in-progress",
+        "dependencies": [
+          7,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "priority": "high",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-07T18:22:05.914Z",
+      "updated": "2025-09-07T22:58:19.286Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

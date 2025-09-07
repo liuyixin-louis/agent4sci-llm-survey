@@ -1,0 +1,14 @@
+# Requirements for Claude OpenAI-compatible wrappers
+
+# For Approach 1: OpenAI SDK with Anthropic endpoint
+openai>=1.0.0
+
+# For Approach 2: Claude Code SDK
+claude-code-sdk>=0.1.0
+
+# Optional: For async support
+aiohttp>=3.9.0
+
+# Note: For Approach 3 (CLI wrapper), you need to install Claude CLI separately:
+# npm install -g @anthropic-ai/claude-code
+# Then run: claude login

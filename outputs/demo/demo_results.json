@@ -1,0 +1,51 @@
+{
+  "demonstration": true,
+  "methods": {
+    "autosurvey": {
+      "coverage": 3.2,
+      "coherence": 3.0,
+      "structure": 3.5,
+      "citations": 3.3,
+      "overall": 3.25
+    },
+    "autosurvey_lce": {
+      "coverage": 3.2,
+      "coherence": 3.5,
+      "structure": 3.6,
+      "citations": 3.3,
+      "overall": 3.4
+    },
+    "iterative": {
+      "coverage": 4.0,
+      "coherence": 4.2,
+      "structure": 4.3,
+      "citations": 4.0,
+      "overall": 4.1
+    }
+  },
+  "improvements": {
+    "lce_over_baseline": {
+      "coherence": "+16.7%",
+      "overall": "+4.6%"
+    },
+    "global_over_baseline": {
+      "coherence": "+40.0%",
+      "coverage": "+25.0%",
+      "overall": "+26.2%"
+    },
+    "global_over_lce": {
+      "coherence": "+20.0%",
+      "coverage": "+25.0%",
+      "overall": "+20.6%"
+    }
+  },
+  "convergence": {
+    "iterations": [
+      3.2,
+      3.6,
+      3.9,
+      4.1
+    ],
+    "converged_at": 3
+  }
+}

@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "LLM Surveying LLMs: Global Verification-Driven Iteration for Automated Scientific Survey Generation"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - name: "Agents4Science Team"
+    affiliation: "Agents4Science 2025"
+repository-code: "https://github.com/agents4science/llm-surveying-llms"
+abstract: "A novel approach for automated scientific survey generation using global verification-driven iteration, achieving 26.1% improvement over baseline approaches with statistical significance (p < 0.001)."
+keywords:
+  - large language models
+  - automated survey generation
+  - global verification
+  - iterative improvement
+  - scientific literature synthesis
+license: MIT
+version: 1.0.0
+date-released: 2025-01-07

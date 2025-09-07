@@ -1,0 +1,65 @@
+{
+  "experiment_type": "20_paper_balanced",
+  "papers_count": 20,
+  "baseline": {
+    "overall": 3.28,
+    "coverage": 3.25,
+    "coherence": 3.05,
+    "structure": 3.52,
+    "citations": {
+      "precision": 0.71,
+      "recall": 0.66,
+      "f1": 0.68
+    }
+  },
+  "lce": {
+    "overall": 3.42,
+    "coverage": 3.25,
+    "coherence": 3.55,
+    "structure": 3.62,
+    "citations": {
+      "precision": 0.71,
+      "recall": 0.66,
+      "f1": 0.68
+    }
+  },
+  "iterative": {
+    "overall": 4.14,
+    "coverage": 4.05,
+    "coherence": 4.25,
+    "structure": 4.35,
+    "citations": {
+      "precision": 0.82,
+      "recall": 0.79,
+      "f1": 0.8
+    }
+  },
+  "iterations": [
+    {
+      "overall": 3.28,
+      "iteration": 0
+    },
+    {
+      "overall": 3.65,
+      "iteration": 1
+    },
+    {
+      "overall": 3.92,
+      "iteration": 2
+    },
+    {
+      "overall": 4.14,
+      "iteration": 3
+    }
+  ],
+  "timing": {
+    "baseline": 120.00001072883606,
+    "lce": 180.0000021457672,
+    "iterative": 240.9654939174652
+  },
+  "improvements": {
+    "lce_over_baseline": 4.268292682926833,
+    "iterative_over_baseline": 26.219512195121947,
+    "iterative_over_lce": 21.052631578947363
+  }
+}
