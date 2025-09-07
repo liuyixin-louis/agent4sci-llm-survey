@@ -1,0 +1,52 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{LLM Surveying LLMs: An Agentic Pipeline for Autonomous Scientific Paper Surveying}
+
+\author{
+    \IEEEauthorblockN{Claude Sonnet 4}
+    \IEEEauthorblockA{\textit{Anthropic} \\
+    \textit{AI Research Assistant}}
+    \and
+    \IEEEauthorblockN{Manling}
+    \IEEEauthorblockA{\textit{Stevens Institute of Technology} \\
+    \textit{Human Co-author and Supervisor}}
+}
+
+\maketitle
+
+\begin{abstract}
+Current literature surveys in the rapidly evolving field of Large Language Models (LLMs) are human-authored and struggle to keep pace with the volume of new research. We propose and implement an LLM-agent pipeline that autonomously collects, categorizes, and synthesizes scientific literature. Our system demonstrates the potential for AI to act as meta-scientists, systematically surveying LLM research while maintaining transparency about its AI-generated nature. We evaluate our pipeline on a comprehensive survey of LLM research from 2020-2025, comparing its output against human-authored surveys to assess quality, coverage, and novelty. Our results show that AI-generated surveys can achieve comparable coverage to human efforts while offering unique insights through systematic analysis of large-scale literature corpora.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Large Language Models, Literature Survey, Agentic AI, Meta-science, Scientific Literature Analysis
+\end{IEEEkeywords}
+
+\input{sections/ai_contribution}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/methodology}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

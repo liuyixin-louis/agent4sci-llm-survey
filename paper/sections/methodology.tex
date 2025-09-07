@@ -1,0 +1,246 @@
+\section{Methodology}
+
+\subsection{Pipeline Overview}
+
+Our agentic pipeline for autonomous literature surveying consists of six main stages, each orchestrated by specialized AI agents working in coordination. The pipeline is designed to be modular, scalable, and transparent, with each stage building upon the outputs of previous stages.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/pipeline_architecture}
+\caption{Overview of the agentic pipeline architecture showing the six main stages and agent interactions.}
+\label{fig:pipeline_architecture}
+\end{figure}
+
+\subsection{Stage 1: Literature Collection}
+
+The first stage involves collecting scientific papers from multiple sources using our \textbf{Retriever Agent}.
+
+\subsubsection{Data Sources}
+
+We integrate with several academic databases and repositories:
+\begin{itemize}
+    \item \textbf{arXiv}: Preprints in computer science, mathematics, and related fields
+    \item \textbf{OpenAlex}: Open scholarly knowledge graph with comprehensive coverage
+    \item \textbf{Semantic Scholar}: AI-powered research paper search and analysis
+    \item \textbf{Google Scholar}: Web-based academic search (via web scraping)
+\end{itemize}
+
+\subsubsection{Search Strategy}
+
+The Retriever Agent executes a systematic search strategy:
+\begin{enumerate}
+    \item \textbf{Query Formulation}: Uses predefined search terms covering key LLM research areas
+    \item \textbf{Multi-Source Search}: Executes searches across all available sources simultaneously
+    \item \textbf{Result Aggregation}: Combines results from different sources
+    \item \textbf{Duplicate Detection}: Identifies and removes duplicate papers using title similarity
+\end{enumerate}
+
+\subsubsection{Initial Filtering}
+
+Papers are initially filtered based on:
+\begin{itemize}
+    \item Publication date within specified range (2020-2025)
+    \item Minimum citation count threshold
+    \item Relevance to LLM research topics
+    \item Availability of full text or abstracts
+\end{itemize}
+
+\subsection{Stage 2: Preprocessing and Filtering}
+
+The \textbf{Preprocessor} component cleans and standardizes collected data.
+
+\subsubsection{Text Processing}
+
+\begin{itemize}
+    \item \textbf{Abstract Extraction}: Extracts and cleans paper abstracts
+    \item \textbf{Metadata Standardization}: Normalizes author names, publication dates, and citations
+    \item \textbf{Language Detection}: Ensures papers are in English
+    \item \textbf{Content Validation}: Verifies paper content meets quality thresholds
+\end{itemize}
+
+\subsubsection{Quality Assessment}
+
+Papers are scored based on:
+\begin{itemize}
+    \item Abstract completeness and clarity
+    \item Citation count and impact metrics
+    \item Publication venue reputation
+    \item Author institutional affiliations
+\end{itemize}
+
+\subsection{Stage 3: Categorization and Clustering}
+
+The \textbf{Classifier Agent} organizes papers into research categories using both rule-based and ML-based approaches.
+
+\subsubsection{Category Identification}
+
+The agent identifies research categories through:
+\begin{itemize}
+    \item \textbf{Content Analysis}: LLM-based analysis of paper abstracts and titles
+    \item \textbf{Keyword Clustering}: Groups papers by shared terminology and concepts
+    \textbf{Topic Modeling}: Uses LDA (Latent Dirichlet Allocation) to identify latent topics
+\end{itemize}
+
+\subsubsection{Paper Classification}
+
+Each paper is classified into one or more categories:
+\begin{itemize}
+    \item \textbf{Primary Category}: Main research area
+    \item \textbf{Secondary Categories}: Related research areas
+    \item \textbf{Confidence Score}: Classification confidence level
+\end{itemize}
+
+\subsubsection{Category Validation}
+
+Categories are validated using:
+\begin{itemize}
+    \item \textbf{Minimum Paper Count}: Ensures sufficient papers per category
+    \item \textbf{Category Coherence}: Measures semantic similarity within categories
+    \item \textbf{Expert Validation}: Human review of category appropriateness
+\end{itemize}
+
+\subsection{Stage 4: Trend Analysis}
+
+The pipeline analyzes temporal and citation patterns to identify research trends.
+
+\subsubsection{Temporal Analysis}
+
+\begin{itemize}
+    \item \textbf{Publication Trends}: Tracks paper publication volume over time
+    \item \textbf{Research Evolution}: Identifies how research focus changes over time
+    \item \textbf{Seasonal Patterns}: Detects conference submission cycles
+\end{itemize}
+
+\subsubsection{Citation Analysis}
+
+\begin{itemize}
+    \item \textbf{Impact Assessment}: Analyzes citation patterns and paper influence
+    \item \textbf{Knowledge Flow}: Maps how ideas spread through the research community
+    \item \textbf{Research Gaps}: Identifies areas with limited recent activity
+\end{itemize}
+
+\subsection{Stage 5: Survey Generation}
+
+The \textbf{Summarizer Agent} generates comprehensive survey content using LLM-based text generation.
+
+\subsubsection{Content Generation Strategy}
+
+The agent follows a structured approach:
+\begin{enumerate}
+    \item \textbf{Executive Summary}: High-level overview of findings
+    \item \textbf{Category Sections}: Detailed analysis of each research area
+    \item \textbf{Cross-Category Analysis}: Identifies connections between areas
+    \item \textbf{Methodology Section}: Describes the pipeline approach
+    \item \textbf{Conclusions}: Summary of key insights and future directions
+\end{enumerate}
+
+\subsubsection{LLM Prompting Strategy}
+
+We employ carefully crafted prompts that:
+\begin{itemize}
+    \item \textbf{Maintain Academic Tone}: Ensure professional, scholarly writing style
+    \item \textbf{Provide Context}: Include relevant background information
+    \item \textbf{Enforce Structure}: Guide consistent section organization
+    \item \textbf{Ensure Accuracy}: Request factual, evidence-based content
+\end{itemize}
+
+\subsubsection{Quality Control}
+
+Generated content undergoes multiple quality checks:
+\begin{itemize}
+    \item \textbf{Fact Verification}: Cross-references claims with source papers
+    \item \textbf{Coherence Assessment}: Ensures logical flow between sections
+    \item \textbf{Completeness Check}: Verifies all categories are covered
+    \item \textbf{Style Consistency}: Maintains uniform writing style
+\end{itemize}
+
+\subsection{Stage 6: Evaluation and Quality Assessment}
+
+The \textbf{Critic Agent} evaluates the generated survey using multiple metrics.
+
+\subsubsection{Evaluation Metrics}
+
+We assess survey quality across several dimensions:
+\begin{itemize}
+    \item \textbf{Coverage}: Percentage of relevant papers included
+    \item \textbf{Accuracy}: Factual correctness of statements
+    \item \textbf{Novelty}: Original insights and connections identified
+    \item \textbf{Readability}: Clarity and accessibility of writing
+    \item \textbf{Citation Accuracy}: Proper attribution of sources
+\end{itemize}
+
+\subsubsection{Comparison with Human Surveys}
+
+The pipeline output is compared against:
+\begin{itemize}
+    \item \textbf{Published Surveys}: Existing human-authored literature reviews
+    \item \textbf{Expert Assessments}: Domain expert evaluations
+    \item \textbf{Peer Review}: Academic peer feedback
+\end{itemize}
+
+\subsection{Agent Architecture and Coordination}
+
+\subsubsection{Agent Roles and Responsibilities}
+
+Each agent has a specialized role:
+\begin{itemize}
+    \item \textbf{Retriever Agent}: Literature collection and source integration
+    \item \textbf{Classifier Agent}: Paper categorization and topic identification
+    \item \textbf{Summarizer Agent}: Content generation and synthesis
+    \item \textbf{Critic Agent}: Quality evaluation and feedback
+\end{itemize}
+
+\subsubsection{Inter-Agent Communication}
+
+Agents communicate through:
+\begin{itemize}
+    \item \textbf{Structured Data Formats}: JSON-based data exchange
+    \item \textbf{Shared State Management}: Centralized pipeline state tracking
+    \item \textbf{Error Handling}: Graceful failure recovery and retry mechanisms
+    \item \textbf{Progress Monitoring}: Real-time status updates and logging
+\end{itemize}
+
+\subsection{Implementation Details}
+
+\subsubsection{Technology Stack}
+
+The pipeline is implemented using:
+\begin{itemize}
+    \item \textbf{Python 3.9+}: Core programming language
+    \item \textbf{LangChain}: Agent framework and LLM integration
+    \textbf{Anthropic Claude}: Primary LLM for content generation
+    \textbf{Vector Databases}: For semantic search and similarity
+    \textbf{SQLite}: Local data storage and caching
+\end{itemize}
+
+\subsubsection{Performance Optimizations}
+
+Several optimizations ensure efficient execution:
+\begin{itemize}
+    \item \textbf{Batch Processing}: Parallel processing of papers
+    \item \textbf{Caching}: Intermediate results storage
+    \item \textbf{Rate Limiting}: Respects API usage limits
+    \item \textbf{Incremental Updates}: Processes new papers efficiently
+\end{itemize}
+
+\subsection{Ethical Considerations and Transparency}
+
+\subsubsection{AI Authorship Disclosure}
+
+We maintain transparency through:
+\begin{itemize}
+    \item \textbf{Clear Attribution}: Explicit AI contribution statements
+    \item \textbf{Process Documentation}: Detailed methodology descriptions
+    \item \textbf{Source Tracking}: Complete paper of sources and references
+    \item \textbf{Human Oversight}: Human co-author validation and review
+\end{itemize}
+
+\subsubsection{Bias Mitigation}
+
+The pipeline addresses potential biases by:
+\begin{itemize}
+    \item \textbf{Diverse Source Integration}: Multiple academic databases
+    \item \textbf{Balanced Sampling}: Representative paper selection
+    \item \textbf{Transparent Criteria}: Clear inclusion/exclusion rules
+    \item \textbf{Regular Auditing}: Periodic bias assessment
+\end{itemize}

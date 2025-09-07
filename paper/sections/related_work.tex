@@ -1,0 +1,70 @@
+\section{Related Work}
+
+\subsection{AI-Assisted Literature Review}
+
+Recent years have witnessed growing interest in using AI systems to assist with literature review tasks. Several approaches have emerged, each addressing different aspects of the literature surveying process.
+
+\subsubsection{Retrieval-Augmented Generation (RAG) Systems}
+
+RAG-based approaches combine information retrieval with large language models to generate literature summaries. Works such as \cite{lewis2019retrieval} and \cite{guu2020retrieval} demonstrate how retrieval mechanisms can enhance LLM outputs with factual information. However, these systems typically focus on individual document summarization rather than comprehensive literature surveys across multiple sources.
+
+\subsubsection{AI-Powered Systematic Reviews}
+
+Several studies have explored automated systematic review processes. \cite{marshall2017automation} developed tools for automating systematic review workflows, while \cite{van2019automation} focused on automating study selection and data extraction. These approaches, however, maintain human oversight and do not fully automate the synthesis and writing phases.
+
+\subsubsection{LLM-Based Literature Analysis}
+
+Recent work has explored using LLMs for literature analysis tasks. \cite{wang2023large} demonstrated LLM capabilities in understanding scientific literature, while \cite{liu2023survey} explored using LLMs for survey generation. However, these approaches lack the systematic, multi-agent coordination that our pipeline provides.
+
+\subsection{Agent Frameworks and Multi-Agent Systems}
+
+Our work builds upon established research in agent frameworks and multi-agent coordination systems.
+
+\subsubsection{Autonomous Agent Frameworks}
+
+Frameworks like AutoGPT \cite{significant2023autogpt} and LangChain \cite{langchain2022} have popularized the concept of autonomous AI agents. These systems demonstrate the potential for LLM-based agents to perform complex, multi-step tasks. However, they often lack the specialized domain knowledge and systematic approach required for scientific literature analysis.
+
+\subsubsection{Multi-Agent Coordination}
+
+Research in multi-agent systems \cite{wooldridge2009introduction} provides theoretical foundations for coordinating multiple specialized agents. Our pipeline applies these principles to create a coordinated system where each agent has a specific role in the literature surveying process.
+
+\subsubsection{Scientific Workflow Automation}
+
+Several projects have explored automating scientific workflows. \cite{gil2011workflow} discusses workflow automation in scientific computing, while \cite{deelman2015pegasus} presents frameworks for scientific workflow management. Our work extends these concepts to literature surveying, introducing AI agents as workflow components.
+
+\subsection{Literature Survey Methodologies}
+
+\subsubsection{Traditional Survey Approaches}
+
+Conventional literature surveys follow established methodologies \cite{kitchenham2004procedures}, typically involving manual search, screening, and synthesis. While effective, these approaches struggle with the volume and velocity of modern research output, particularly in fast-moving fields like LLM research.
+
+\subsubsection{Systematic Review Automation}
+
+Efforts to automate systematic reviews have focused on specific stages of the process. \cite{wallace2016identifying} automated study identification, while \cite{thomas2011automating} focused on data extraction. Our approach differs by providing end-to-end automation with AI agents handling all stages.
+
+\subsubsection{Meta-Science and Research Synthesis}
+
+The field of meta-science \cite{ioannidis2018meta} examines how research is conducted and synthesized. Our work contributes to this area by exploring how AI systems can participate in research synthesis, potentially accelerating the pace of scientific discovery.
+
+\subsection{Evaluation of AI-Generated Content}
+
+\subsubsection{Quality Assessment Metrics}
+
+Evaluating AI-generated content requires appropriate metrics. \cite{zhang2023evaluating} discusses evaluation approaches for AI-generated text, while \cite{liu2023survey} proposes metrics specific to survey quality. We build upon these frameworks to assess our pipeline's output.
+
+\subsubsection{Comparison with Human-Authored Content}
+
+Understanding how AI-generated surveys compare to human-authored ones is crucial. \cite{wang2023large} provides frameworks for such comparisons, while \cite{liu2023survey} demonstrates evaluation methodologies. Our evaluation extends these approaches to comprehensive literature surveys.
+
+\subsection{Gaps in Current Research}
+
+Despite significant progress in AI-assisted literature review, several gaps remain:
+
+\begin{itemize}
+    \item \textbf{End-to-End Automation}: Current approaches focus on individual stages rather than complete automation
+    \item \textbf{Multi-Source Integration}: Limited work exists on systematically combining multiple literature sources
+    \item \textbf{AI Authorship Transparency}: Few studies address the ethical and practical implications of AI-authored scientific content
+    \item \textbf{Scalability}: Existing solutions struggle with the exponential growth in research output
+\end{itemize}
+
+Our work addresses these gaps by providing a comprehensive, agentic pipeline that can autonomously conduct literature surveys while maintaining transparency about AI contributions.
